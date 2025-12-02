@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор QR-кодов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Генератор QR-кодов</h1>
+        <p class="subtitle">Введите текст или ссылку для создания QR-кода</p>
+
+        <form method="POST" action="/">
+            <div class="input-group">
+                <input type="text"
+                       name="data"
+                       placeholder="Введите текст или ссылку..."
+                       value="{{ request.form.data if request.form.data else '' }}"
+                       required
+                       autofocus>
+            </div>
+            <button type="submit" class="btn-generate">
+                📱 Сгенерировать QR-код
+            </button>
+        </form>
+
+        {% if qr_image %}
+        <div class="qr-container">
+            <h2>✅ Ваш QR-код готов:</h2>
+            <div class="qr-image-wrapper">
+                <img src="data:image/png;base64,{{ qr_image }}"
+                     alt="QR Code"
+                     class="qr-image">
+            </div>
+
+            <div class="actions">
+                <a href="{{ url_for('download_qr', qr_id=qr_id) }}"
+                   class="btn-download">
+                    ⬇️ Скачать QR-код
+                </a>
+
+                <button onclick="window.location.href='/'"
+                        class="btn-new">
+                    🔄 Создать новый
+                </button>
+            </div>
+
+            <div class="hint">
+                <p>💡 Наведите камеру телефона на QR-код, чтобы прочитать его</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Создано с помощью Python Flask | QR-код содержит:
+               <span class="data-preview">
+                   {% if qr_image and request.form.data %}
+                       {{ request.form.data[:50] }}{% if request.form.data|length > 50 %}...{% endif %}
+                   {% endif %}
+               </span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
